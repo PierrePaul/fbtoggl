@@ -213,7 +213,7 @@ pub fn summary(
     return Ok(());
   }
 
-  for (user, time_entries) in time_entries_by_user {
+  for (_, time_entries) in time_entries_by_user {
     let total_hours = time_entries
         .iter()
         .map(|time_entry| Duration::milliseconds(time_entry.dur as i64))

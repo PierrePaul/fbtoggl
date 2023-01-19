@@ -85,6 +85,17 @@ fn main() -> anyhow::Result<()> {
           &report_client,
         )?;
       }
+      Reports::Summary(detailed) => {
+        let client = init_client()?;
+        let report_client = init_report_client()?;
+
+        commands::reports::summary(
+          debug,
+          &client,
+          &detailed.range,
+          &report_client,
+        )?;
+      }
     },
   }
 

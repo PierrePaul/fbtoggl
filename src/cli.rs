@@ -52,10 +52,18 @@ pub enum SubCommand {
 pub enum Reports {
   /// Detailed report with violations: more than 10 hours, start before 6am, end after 10pm and pause violations (Arbeitszeitgesetz (ArbZG) § 4 Ruhepausen)
   Detailed(Detailed),
+  Summary(Summary),
 }
 
 #[derive(Parser, Debug)]
 pub struct Detailed {
+  /// Start ('today', 'yesterday', 'this-week', 'last-week', 'this-month', 'last-month', ISO 8601 date '2021-11-01'), ISO 8601 date range '2021-11-01|2021-11-02')
+  #[arg(long, default_value = "today")]
+  pub range: Range,
+}
+
+#[derive(Parser, Debug)]
+pub struct Summary {
   /// Start ('today', 'yesterday', 'this-week', 'last-week', 'this-month', 'last-month', ISO 8601 date '2021-11-01'), ISO 8601 date range '2021-11-01|2021-11-02')
   #[arg(long, default_value = "today")]
   pub range: Range,
