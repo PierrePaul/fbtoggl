@@ -175,3 +175,54 @@ pub fn detailed(
 
   Ok(())
 }
+
+pub fn summary(
+  debug: bool,
+  client: &TogglClient,
+  range: &Range,
+  report_client: &TogglReportClient,
+) -> anyhow::Result<()> {
+  let me = client.get_me(debug)?;
+
+  let mut time_entries = vec![];
+
+  let details =
+      report_client.details(debug, me.default_workspace_id, range, 1)?;
+
+  for time_entry in details.data {
+    time_entries.push(time_entry);
+  }
+
+  let total_count = details.total_count;
+  let pages = (total_count as f64 / 50.0).ceil() as u64;
+
+  for page in 2..=pages {
+    let details =
+        report_client.details(debug, me.default_workspace_id, range, page)?;
+
+    for time_entry in details.data {
+      time_entries.push(time_entry);
+    }
+  }
+
+  let time_entries_by_user =
+      time_entries.iter().into_group_map_by(|a| a.user.to_owned());
+
+  if time_entries_by_user.is_empty() {
+    println!("00:00:00");
+    return Ok(());
+  }
+
+  for (user, time_entries) in time_entries_by_user {
+    let total_hours = time_entries
+        .iter()
+        .map(|time_entry| Duration::milliseconds(time_entry.dur as i64))
+        .fold(Duration::zero(), |a, b| a + b);
+
+    println!();
+    println!("Toggl timer - {}", formatted_duration(total_hours));
+    println!();
+  }
+
+  Ok(())
+}
