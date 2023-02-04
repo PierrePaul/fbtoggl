@@ -14,6 +14,15 @@ fn formatted_duration(duration: Duration) -> String {
     .map_or_else(|_| "".to_string(), |h| format_duration(h).to_string())
 }
 
+fn get_seconds(duration: Duration) -> u64 {
+  duration
+    .to_std()
+    .map_or_else(
+  |_| 0,
+      |h| h.as_secs()
+  )
+}
+
 pub fn detailed(
   debug: bool,
   client: &TogglClient,
@@ -220,7 +229,10 @@ pub fn summary(
         .fold(Duration::zero(), |a, b| a + b);
 
     println!();
-    println!("Toggl timer - {}", formatted_duration(total_hours));
+    let duration = total_hours;
+    let seconds  = get_seconds(duration);
+    println!("{}", seconds);
+
     println!();
   }
 
